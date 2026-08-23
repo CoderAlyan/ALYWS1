@@ -35,6 +35,48 @@
         font-size: clamp(2rem, 5vw, 3rem);
         color: #ffffff;
       }
+
+      .azha-brand {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+
+      .azha-brand-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(244, 247, 255, 0.6);
+      }
+
+      .azha-brand-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .azha-brand-logo {
+        width: 42px;
+        height: 42px;
+        object-fit: contain;
+        filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.5));
+      }
+
+      .azha-brand-text {
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        background: linear-gradient(135deg, #ffffff 0%, #8b5cf6 30%, #22d3ee 60%, #a7f3d0 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+      }
     </style>
   </head>
   <body>
@@ -50,5 +92,12 @@
         </div>
       </section>
     </main>
+    <div class="azha-brand">
+      <span class="azha-brand-label">Created by</span>
+      <div class="azha-brand-row">
+        <img src="azha-logo.png" alt="AZHA MOH logo" class="azha-brand-logo" />
+        <span class="azha-brand-text">AZHA MOH</span>
+      </div>
+    </div>
   </body>
 </html>
