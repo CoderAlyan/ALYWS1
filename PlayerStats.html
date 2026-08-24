@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Player Stats | CoderAlyan</title>
+    <link rel="icon" type="image/png" href="ChatGPT Image Aug 22, 2026, 07_30_36 AM.png" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #0b1020;
+        color: #f4f7ff;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 80px 24px;
+      }
+
+      .return-btn {
+        display: inline-block;
+        margin-bottom: 20px;
+        padding: 12px 20px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #e2e8f0;
+        text-decoration: none;
+        font-weight: 700;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+
+      .section {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 40px 24px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: clamp(2rem, 5vw, 3rem);
+        color: #ffffff;
+      }
+
+      .subtitle {
+        margin: 10px 0 0;
+        color: rgba(244, 247, 255, 0.7);
+      }
+
+      .table-wrap {
+        margin-top: 28px;
+        overflow-x: auto;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+      }
+
+      thead th {
+        text-align: left;
+        padding: 14px 16px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #7dd3fc;
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      tbody td {
+        padding: 14px 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        white-space: nowrap;
+      }
+
+      tbody tr:hover {
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .player-name {
+        font-weight: 700;
+        color: #ffffff;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #8b5cf6, #22d3ee);
+        color: white;
+      }
+
+      .azha-brand {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+
+      .azha-brand-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(244, 247, 255, 0.6);
+      }
+
+      .azha-brand-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .azha-brand-logo {
+        width: 42px;
+        height: 42px;
+        object-fit: contain;
+        filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.5));
+      }
+
+      .azha-brand-text {
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        background: linear-gradient(135deg, #ffffff 0%, #8b5cf6 30%, #22d3ee 60%, #a7f3d0 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <section class="section">
+        <a href="index.html" class="return-btn">Return</a>
+        <h2>Soccer Player Stats</h2>
+        <p class="subtitle">Season stats for a few standout players.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th>Team</th>
+                <th>Position</th>
+                <th>Matches</th>
+                <th>Goals</th>
+                <th>Assists</th>
+                <th>Rating</th>
+              </tr>
+            </thead>
+            <tbody id="statsBody">
+              <tr>
+                <td class="player-name">Lionel Messi</td>
+                <td>Inter Miami</td>
+                <td>Forward</td>
+                <td>28</td>
+                <td>24</td>
+                <td>15</td>
+                <td><span class="badge">9.1</span></td>
+              </tr>
+              <tr>
+                <td class="player-name">Erling Haaland</td>
+                <td>Manchester City</td>
+                <td>Forward</td>
+                <td>31</td>
+                <td>29</td>
+                <td>6</td>
+                <td><span class="badge">8.9</span></td>
+              </tr>
+              <tr>
+                <td class="player-name">Kevin De Bruyne</td>
+                <td>Manchester City</td>
+                <td>Midfielder</td>
+                <td>26</td>
+                <td>7</td>
+                <td>18</td>
+                <td><span class="badge">8.7</span></td>
+              </tr>
+              <tr>
+                <td class="player-name">Virgil van Dijk</td>
+                <td>Liverpool</td>
+                <td>Defender</td>
+                <td>33</td>
+                <td>3</td>
+                <td>2</td>
+                <td><span class="badge">8.4</span></td>
+              </tr>
+              <tr>
+                <td class="player-name">Alisson Becker</td>
+                <td>Liverpool</td>
+                <td>Goalkeeper</td>
+                <td>34</td>
+                <td>0</td>
+                <td>1</td>
+                <td><span class="badge">8.2</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div class="azha-brand">
+      <span class="azha-brand-label">Created by</span>
+      <div class="azha-brand-row">
+        <img src="azha-logo.png" alt="AZHA MOH logo" class="azha-brand-logo" />
+        <span class="azha-brand-text">AZHA MOH</span>
+      </div>
+    </div>
+  </body>
+</html>
