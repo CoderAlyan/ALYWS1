@@ -102,6 +102,34 @@
         color: white;
       }
 
+      .search-bar {
+        margin-top: 24px;
+        width: 100%;
+        max-width: 360px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.04);
+        color: #f4f7ff;
+        font-size: 1rem;
+      }
+
+      .search-bar::placeholder {
+        color: rgba(244, 247, 255, 0.45);
+      }
+
+      .search-bar:focus {
+        outline: none;
+        border-color: #22d3ee;
+      }
+
+      .no-results {
+        display: none;
+        padding: 20px 16px;
+        color: rgba(244, 247, 255, 0.6);
+        text-align: center;
+      }
+
       .azha-brand {
         position: fixed;
         bottom: 20px;
@@ -151,6 +179,13 @@
         <a href="index.html" class="return-btn">Return</a>
         <h2>Soccer Player Stats</h2>
         <p class="subtitle">Season stats for a few standout players.</p>
+
+        <input
+          type="text"
+          id="playerSearch"
+          class="search-bar"
+          placeholder="Search by player or team..."
+        />
 
         <div class="table-wrap">
           <table>
@@ -213,6 +248,7 @@
               </tr>
             </tbody>
           </table>
+          <p class="no-results" id="noResults">No players match your search.</p>
         </div>
       </section>
     </main>
@@ -224,5 +260,26 @@
         <span class="azha-brand-text">AZHA MOH</span>
       </div>
     </div>
+
+    <script>
+      const searchInput = document.getElementById('playerSearch');
+      const rows = Array.from(document.querySelectorAll('#statsBody tr'));
+      const noResults = document.getElementById('noResults');
+
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        rows.forEach((row) => {
+          const name = row.children[0].textContent.toLowerCase();
+          const team = row.children[1].textContent.toLowerCase();
+          const matches = name.includes(query) || team.includes(query);
+          row.style.display = matches ? '' : 'none';
+          if (matches) visibleCount++;
+        });
+
+        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+      });
+    </script>
   </body>
 </html>
