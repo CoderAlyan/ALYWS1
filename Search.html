@@ -140,6 +140,16 @@
         white-space: nowrap;
       }
 
+      .result-card.web {
+        border-style: dashed;
+        border-color: rgba(125, 211, 252, 0.4);
+      }
+
+      .result-card.web .badge {
+        background: rgba(255, 255, 255, 0.08);
+        color: #7dd3fc;
+      }
+
       .azha-brand {
         position: fixed;
         bottom: 20px;
@@ -194,7 +204,7 @@
           type="text"
           id="siteSearch"
           class="search-bar"
-          placeholder="Search pages, games, players, links..."
+          placeholder="Search anything — pages, games, players, or the web..."
           autofocus
         />
 
@@ -242,8 +252,13 @@
       const resultCount = document.getElementById('resultCount');
       const noResults = document.getElementById('noResults');
 
+      function webSearchUrl(query) {
+        return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+      }
+
       function renderResults(query) {
-        const q = query.trim().toLowerCase();
+        const raw = query.trim();
+        const q = raw.toLowerCase();
         const matches = SEARCH_INDEX.filter((item) => {
           return (
             item.title.toLowerCase().includes(q) ||
@@ -272,13 +287,34 @@
           resultList.appendChild(card);
         });
 
-        noResults.style.display = matches.length === 0 ? 'block' : 'none';
+        if (raw) {
+          const webCard = document.createElement('a');
+          webCard.className = 'result-card web';
+          webCard.href = webSearchUrl(raw);
+          webCard.target = '_blank';
+          webCard.rel = 'noopener noreferrer';
+          webCard.innerHTML = `
+            <div class="result-info">
+              <h3>Search the web for "${raw}"</h3>
+              <p>Opens results from across the internet in a new tab.</p>
+            </div>
+            <span class="badge">Web</span>
+          `;
+          resultList.appendChild(webCard);
+        }
+
+        noResults.style.display = raw && matches.length === 0 ? 'block' : 'none';
         resultCount.textContent = q
-          ? `${matches.length} result${matches.length === 1 ? '' : 's'}`
+          ? `${matches.length} result${matches.length === 1 ? '' : 's'} on this site`
           : `${matches.length} items`;
       }
 
       searchInput.addEventListener('input', () => renderResults(searchInput.value));
+      searchInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && searchInput.value.trim()) {
+          window.open(webSearchUrl(searchInput.value.trim()), '_blank', 'noopener,noreferrer');
+        }
+      });
       renderResults('');
     </script>
   </body>
