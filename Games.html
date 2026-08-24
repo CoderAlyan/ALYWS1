@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Games | CoderAlyan</title>
+    <link rel="icon" type="image/png" href="ChatGPT Image Aug 22, 2026, 07_30_36 AM.png" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #0b1020;
+        color: #f4f7ff;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 80px 24px;
+      }
+
+      .return-btn {
+        display: inline-block;
+        margin-bottom: 20px;
+        padding: 12px 20px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #e2e8f0;
+        text-decoration: none;
+        font-weight: 700;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+
+      .section {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 40px 24px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: clamp(2rem, 5vw, 3rem);
+        color: #ffffff;
+      }
+
+      .subtitle {
+        margin: 10px 0 0;
+        color: rgba(244, 247, 255, 0.7);
+      }
+
+      .search-bar {
+        margin-top: 20px;
+        width: 100%;
+        max-width: 360px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.04);
+        color: #f4f7ff;
+        font-size: 1rem;
+      }
+
+      .search-bar::placeholder {
+        color: rgba(244, 247, 255, 0.45);
+      }
+
+      .search-bar:focus {
+        outline: none;
+        border-color: #22d3ee;
+      }
+
+      .no-results {
+        display: none;
+        margin-top: 16px;
+        color: rgba(244, 247, 255, 0.6);
+      }
+
+      .game-grid {
+        margin-top: 24px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+      }
+
+      .game-card {
+        cursor: pointer;
+        text-align: left;
+        padding: 20px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+        color: #f4f7ff;
+        font: inherit;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+      }
+
+      .game-card:hover {
+        transform: translateY(-2px);
+        border-color: #22d3ee;
+      }
+
+      .game-card.active {
+        border-color: #8b5cf6;
+        background: rgba(139, 92, 246, 0.12);
+      }
+
+      .game-card h3 {
+        margin: 0 0 6px;
+        font-size: 1.2rem;
+        color: #ffffff;
+      }
+
+      .game-card p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: rgba(244, 247, 255, 0.65);
+      }
+
+      .game-panel {
+        display: none;
+        margin-top: 32px;
+        padding: 28px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .game-panel.active {
+        display: block;
+      }
+
+      .game-panel h3 {
+        margin: 0 0 16px;
+        color: #ffffff;
+      }
+
+      .game-status {
+        margin: 0 0 16px;
+        color: #7dd3fc;
+        font-weight: 700;
+        min-height: 1.4em;
+      }
+
+      .action-btn {
+        margin-top: 16px;
+        display: inline-block;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #8b5cf6, #22d3ee);
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      /* Tic-Tac-Toe */
+      .ttt-board {
+        display: grid;
+        grid-template-columns: repeat(3, 80px);
+        grid-template-rows: repeat(3, 80px);
+        gap: 8px;
+      }
+
+      .ttt-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 900;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.05);
+        color: #ffffff;
+        cursor: pointer;
+      }
+
+      .ttt-cell:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      /* Memory Match */
+      .memory-board {
+        display: grid;
+        grid-template-columns: repeat(4, 70px);
+        grid-template-rows: repeat(4, 70px);
+        gap: 8px;
+      }
+
+      .memory-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        font-weight: 900;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.05);
+        color: transparent;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        user-select: none;
+      }
+
+      .memory-cell.revealed,
+      .memory-cell.matched {
+        color: #ffffff;
+        background: rgba(139, 92, 246, 0.25);
+      }
+
+      .memory-cell.matched {
+        border-color: #22d3ee;
+      }
+
+      /* Rock Paper Scissors */
+      .rps-choices {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .rps-choices button {
+        padding: 14px 22px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.06);
+        color: #f4f7ff;
+        font-weight: 700;
+        font-size: 1.2rem;
+        cursor: pointer;
+      }
+
+      .rps-choices button:hover {
+        border-color: #22d3ee;
+      }
+
+      .rps-result {
+        margin-top: 18px;
+        font-size: 1rem;
+        color: rgba(244, 247, 255, 0.85);
+      }
+
+      .azha-brand {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+
+      .azha-brand-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(244, 247, 255, 0.6);
+      }
+
+      .azha-brand-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .azha-brand-logo {
+        width: 42px;
+        height: 42px;
+        object-fit: contain;
+        filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.5));
+      }
+
+      .azha-brand-text {
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        background: linear-gradient(135deg, #ffffff 0%, #8b5cf6 30%, #22d3ee 60%, #a7f3d0 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <section class="section">
+        <a href="index.html" class="return-btn">Return</a>
+        <h2>Games</h2>
+        <p class="subtitle">Pick a game and play right here.</p>
+
+        <input
+          type="text"
+          id="gameSearch"
+          class="search-bar"
+          placeholder="Search games..."
+        />
+
+        <div class="game-grid" id="gameGrid">
+          <button type="button" class="game-card" data-game="ttt">
+            <h3>Tic-Tac-Toe</h3>
+            <p>Classic two-player X's and O's.</p>
+          </button>
+          <button type="button" class="game-card" data-game="memory">
+            <h3>Memory Match</h3>
+            <p>Flip cards and find every pair.</p>
+          </button>
+          <button type="button" class="game-card" data-game="rps">
+            <h3>Rock Paper Scissors</h3>
+            <p>Beat the computer, best of luck.</p>
+          </button>
+        </div>
+        <p class="no-results" id="noResults">No games match your search.</p>
+
+        <!-- Tic-Tac-Toe -->
+        <div class="game-panel" id="panel-ttt">
+          <h3>Tic-Tac-Toe</h3>
+          <p class="game-status" id="tttStatus">Player X's turn</p>
+          <div class="ttt-board" id="tttBoard"></div>
+          <button type="button" class="action-btn" id="tttReset">Reset</button>
+        </div>
+
+        <!-- Memory Match -->
+        <div class="game-panel" id="panel-memory">
+          <h3>Memory Match</h3>
+          <p class="game-status" id="memoryStatus">Find all the pairs</p>
+          <div class="memory-board" id="memoryBoard"></div>
+          <button type="button" class="action-btn" id="memoryReset">Reset</button>
+        </div>
+
+        <!-- Rock Paper Scissors -->
+        <div class="game-panel" id="panel-rps">
+          <h3>Rock Paper Scissors</h3>
+          <p class="game-status" id="rpsScore">You: 0 &nbsp;|&nbsp; Computer: 0</p>
+          <div class="rps-choices">
+            <button type="button" data-choice="Rock">🪨 Rock</button>
+            <button type="button" data-choice="Paper">📄 Paper</button>
+            <button type="button" data-choice="Scissors">✂️ Scissors</button>
+          </div>
+          <p class="rps-result" id="rpsResult">Make your move.</p>
+        </div>
+      </section>
+    </main>
+
+    <div class="azha-brand">
+      <span class="azha-brand-label">Created by</span>
+      <div class="azha-brand-row">
+        <img src="azha-logo.png" alt="AZHA MOH logo" class="azha-brand-logo" />
+        <span class="azha-brand-text">AZHA MOH</span>
+      </div>
+    </div>
+
+    <script>
+      // ---- Card selection / search ----
+      const cards = Array.from(document.querySelectorAll('.game-card'));
+      const panels = {
+        ttt: document.getElementById('panel-ttt'),
+        memory: document.getElementById('panel-memory'),
+        rps: document.getElementById('panel-rps'),
+      };
+      const searchInput = document.getElementById('gameSearch');
+      const noResults = document.getElementById('noResults');
+
+      function showGame(key) {
+        cards.forEach((c) => c.classList.toggle('active', c.dataset.game === key));
+        Object.entries(panels).forEach(([k, panel]) => panel.classList.toggle('active', k === key));
+      }
+
+      cards.forEach((card) => {
+        card.addEventListener('click', () => showGame(card.dataset.game));
+      });
+
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+          const matches = card.textContent.toLowerCase().includes(query);
+          card.style.display = matches ? '' : 'none';
+          if (matches) visibleCount++;
+        });
+
+        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+      });
+
+      // ---- Tic-Tac-Toe ----
+      const tttBoard = document.getElementById('tttBoard');
+      const tttStatus = document.getElementById('tttStatus');
+      const tttReset = document.getElementById('tttReset');
+      let tttCells = Array(9).fill(null);
+      let tttTurn = 'X';
+      let tttOver = false;
+
+      const WIN_LINES = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6],
+      ];
+
+      function renderTTT() {
+        tttBoard.innerHTML = '';
+        tttCells.forEach((val, i) => {
+          const cell = document.createElement('div');
+          cell.className = 'ttt-cell';
+          cell.textContent = val || '';
+          cell.addEventListener('click', () => handleTTTClick(i));
+          tttBoard.appendChild(cell);
+        });
+      }
+
+      function handleTTTClick(i) {
+        if (tttOver || tttCells[i]) return;
+        tttCells[i] = tttTurn;
+        renderTTT();
+
+        const winLine = WIN_LINES.find((line) => line.every((idx) => tttCells[idx] === tttTurn));
+        if (winLine) {
+          tttStatus.textContent = `Player ${tttTurn} wins!`;
+          tttOver = true;
+          return;
+        }
+
+        if (tttCells.every((v) => v)) {
+          tttStatus.textContent = "It's a draw!";
+          tttOver = true;
+          return;
+        }
+
+        tttTurn = tttTurn === 'X' ? 'O' : 'X';
+        tttStatus.textContent = `Player ${tttTurn}'s turn`;
+      }
+
+      tttReset.addEventListener('click', () => {
+        tttCells = Array(9).fill(null);
+        tttTurn = 'X';
+        tttOver = false;
+        tttStatus.textContent = "Player X's turn";
+        renderTTT();
+      });
+
+      renderTTT();
+
+      // ---- Memory Match ----
+      const memoryBoard = document.getElementById('memoryBoard');
+      const memoryStatus = document.getElementById('memoryStatus');
+      const memoryReset = document.getElementById('memoryReset');
+      const ICONS = ['⚽', '🏀', '🎾', '🏈', '🎱', '🏐', '🏓', '⛳'];
+      let memoryCards = [];
+      let flipped = [];
+      let matchedCount = 0;
+      let memoryLocked = false;
+
+      function shuffle(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function buildMemory() {
+        memoryCards = shuffle([...ICONS, ...ICONS]);
+        flipped = [];
+        matchedCount = 0;
+        memoryLocked = false;
+        memoryStatus.textContent = 'Find all the pairs';
+        memoryBoard.innerHTML = '';
+
+        memoryCards.forEach((icon, i) => {
+          const cell = document.createElement('div');
+          cell.className = 'memory-cell';
+          cell.dataset.index = i;
+          cell.textContent = icon;
+          cell.addEventListener('click', () => handleMemoryClick(cell, i));
+          memoryBoard.appendChild(cell);
+        });
+      }
+
+      function handleMemoryClick(cell, i) {
+        if (memoryLocked || cell.classList.contains('revealed') || cell.classList.contains('matched')) return;
+
+        cell.classList.add('revealed');
+        flipped.push({ cell, i });
+
+        if (flipped.length === 2) {
+          memoryLocked = true;
+          const [a, b] = flipped;
+
+          if (memoryCards[a.i] === memoryCards[b.i]) {
+            a.cell.classList.add('matched');
+            b.cell.classList.add('matched');
+            matchedCount += 2;
+            flipped = [];
+            memoryLocked = false;
+
+            if (matchedCount === memoryCards.length) {
+              memoryStatus.textContent = 'You matched them all!';
+            }
+          } else {
+            setTimeout(() => {
+              a.cell.classList.remove('revealed');
+              b.cell.classList.remove('revealed');
+              flipped = [];
+              memoryLocked = false;
+            }, 700);
+          }
+        }
+      }
+
+      memoryReset.addEventListener('click', buildMemory);
+      buildMemory();
+
+      // ---- Rock Paper Scissors ----
+      const rpsButtons = document.querySelectorAll('.rps-choices button');
+      const rpsResult = document.getElementById('rpsResult');
+      const rpsScore = document.getElementById('rpsScore');
+      const CHOICES = ['Rock', 'Paper', 'Scissors'];
+      const BEATS = { Rock: 'Scissors', Paper: 'Rock', Scissors: 'Paper' };
+      let playerScore = 0;
+      let computerScore = 0;
+
+      rpsButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const player = btn.dataset.choice;
+          const computer = CHOICES[Math.floor(Math.random() * CHOICES.length)];
+
+          let outcome;
+          if (player === computer) {
+            outcome = "It's a tie!";
+          } else if (BEATS[player] === computer) {
+            outcome = 'You win!';
+            playerScore++;
+          } else {
+            outcome = 'Computer wins!';
+            computerScore++;
+          }
+
+          rpsResult.textContent = `You chose ${player}, computer chose ${computer}. ${outcome}`;
+          rpsScore.textContent = `You: ${playerScore} | Computer: ${computerScore}`;
+        });
+      });
+    </script>
+  </body>
+</html>
