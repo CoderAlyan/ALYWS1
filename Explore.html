@@ -36,6 +36,33 @@
         color: #ffffff;
       }
 
+      .search-bar {
+        margin-top: 20px;
+        width: 100%;
+        max-width: 360px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.04);
+        color: #f4f7ff;
+        font-size: 1rem;
+      }
+
+      .search-bar::placeholder {
+        color: rgba(244, 247, 255, 0.45);
+      }
+
+      .search-bar:focus {
+        outline: none;
+        border-color: #22d3ee;
+      }
+
+      .no-results {
+        display: none;
+        margin-top: 16px;
+        color: rgba(244, 247, 255, 0.6);
+      }
+
       .azha-brand {
         position: fixed;
         bottom: 20px;
@@ -85,11 +112,18 @@
         <a href="index.html" style="display: inline-block; margin-bottom: 20px; padding: 12px 20px; background: rgba(255, 255, 255, 0.06); color: #e2e8f0; text-decoration: none; font-weight: 700; border-radius: 999px; border: 1px solid rgba(255,255,255,0.15);">Return</a>
         <h2>Other Coder Alyan Websites</h2>
         <br />
-        <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+        <input
+          type="text"
+          id="siteSearch"
+          class="search-bar"
+          placeholder="Search websites..."
+        />
+        <div id="siteLinks" style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px;">
           <a href="https://google2o.base44.app/" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 14px 22px; background: linear-gradient(135deg, #8b5cf6, #22d3ee); color: white; text-decoration: none; font-weight: 700; border-radius: 999px; box-shadow: 0 12px 30px rgba(34, 211, 238, 0.35);">Google 2.0</a>
           <a href="https://pitch-master-silky-play.base44.app/" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 14px 22px; background: linear-gradient(135deg, #8b5cf6, #22d3ee); color: white; text-decoration: none; font-weight: 700; border-radius: 999px; box-shadow: 0 12px 30px rgba(34, 211, 238, 0.35);">Pitch Master</a>
           <a href="https://citycrafter.base44.app/" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 14px 22px; background: linear-gradient(135deg, #8b5cf6, #22d3ee); color: white; text-decoration: none; font-weight: 700; border-radius: 999px; box-shadow: 0 12px 30px rgba(34, 211, 238, 0.35);">City Crafter</a>
         </div>
+        <p class="no-results" id="noResults">No websites match your search.</p>
       </section>
     </main>
     <div class="azha-brand">
@@ -99,5 +133,24 @@
         <span class="azha-brand-text">AZHA MOH</span>
       </div>
     </div>
+
+    <script>
+      const searchInput = document.getElementById('siteSearch');
+      const links = Array.from(document.querySelectorAll('#siteLinks a'));
+      const noResults = document.getElementById('noResults');
+
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        links.forEach((link) => {
+          const matches = link.textContent.toLowerCase().includes(query);
+          link.style.display = matches ? '' : 'none';
+          if (matches) visibleCount++;
+        });
+
+        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+      });
+    </script>
   </body>
 </html>
