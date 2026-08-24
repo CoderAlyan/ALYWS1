@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Games | CoderAlyan</title>
     <link rel="icon" type="image/png" href="ChatGPT Image Aug 22, 2026, 07_30_36 AM.png" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
       * {
         box-sizing: border-box;
@@ -340,9 +341,119 @@
         color: transparent;
         text-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
       }
+
+      .account-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 20;
+        padding: 12px 18px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #f8fbff;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .account-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(5, 8, 15, 0.75);
+        z-index: 30;
+      }
+
+      .account-modal.open {
+        display: flex;
+      }
+
+      .account-card {
+        width: min(92vw, 420px);
+        background: rgba(15, 23, 42, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 22px;
+        padding: 24px;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+      }
+
+      .account-card h3 {
+        margin: 0 0 18px;
+        text-align: center;
+        font-size: 1.7rem;
+      }
+
+      .account-form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .account-form input {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+        color: #fff;
+      }
+
+      .account-form button {
+        padding: 12px 18px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #8b5cf6, #22d3ee);
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .account-message {
+        min-height: 22px;
+        margin-top: 12px;
+        font-size: 0.9rem;
+        color: #8be9fd;
+      }
+
+      .close-btn {
+        float: right;
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
+    <button id="accountBtn" class="account-btn">Account</button>
+
+    <div id="accountModal" class="account-modal">
+      <div class="account-card">
+        <button type="button" id="closeAccountModal" class="close-btn">×</button>
+        <h3>Account</h3>
+
+        <form id="loginForm" class="account-form">
+          <input type="email" id="loginEmail" placeholder="Email" required />
+          <input type="password" id="loginPassword" placeholder="Password" required />
+          <button type="submit">Login</button>
+        </form>
+
+        <hr style="margin: 18px 0; border-color: rgba(255,255,255,0.08);" />
+
+        <form id="signupForm" class="account-form">
+          <input type="text" id="signupUsername" placeholder="Display name" />
+          <input type="email" id="signupEmail" placeholder="Email" required />
+          <input type="password" id="signupPassword" placeholder="Create password" required />
+          <button type="submit">Create Account</button>
+        </form>
+
+        <div id="accountMessage" class="account-message"></div>
+      </div>
+    </div>
+
     <main class="container">
       <section class="section">
         <a href="index.html" class="return-btn">Return</a>
@@ -787,6 +898,143 @@
 
       warReset.addEventListener('click', startWar);
       startWar();
+    </script>
+
+    <script>
+      const supabaseUrl = 'https://xfwlmjktnqezvslabsrc.supabase.co';
+      const supabaseKey = 'sb_publishable_IXGnAQnXbbMM1hkcK3wM-Q_tDO9B7fP';
+      const supabase = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
+
+      function setMessage(text, isError = false) {
+        const el = document.getElementById('accountMessage');
+        if (!el) return;
+        el.textContent = text;
+        el.style.color = isError ? '#ff9aa2' : '#8be9fd';
+      }
+
+      async function updateAccountButton() {
+        const button = document.getElementById('accountBtn');
+        if (!button) return;
+
+        if (!supabase) {
+          button.textContent = 'Account';
+          return;
+        }
+
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session && session.user) {
+          const email = session.user.email || 'Account';
+          button.textContent = email;
+        } else {
+          button.textContent = 'Account';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const accountBtn = document.getElementById('accountBtn');
+        const accountModal = document.getElementById('accountModal');
+        const closeBtn = document.getElementById('closeAccountModal');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+
+        updateAccountButton();
+
+        accountBtn.addEventListener('click', () => {
+          accountModal.classList.add('open');
+          setMessage('');
+          if (!supabase) {
+            setMessage('Supabase is not available. Check the script connection.', true);
+          }
+        });
+
+        closeBtn.addEventListener('click', () => {
+          accountModal.classList.remove('open');
+        });
+
+        accountModal.addEventListener('click', (event) => {
+          if (event.target === accountModal) {
+            accountModal.classList.remove('open');
+          }
+        });
+
+        loginForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          if (!supabase) {
+            setMessage('Supabase is not available. Check the script connection.', true);
+            return;
+          }
+
+          const email = document.getElementById('loginEmail').value.trim();
+          const password = document.getElementById('loginPassword').value;
+
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+          if (error) {
+            setMessage(error.message, true);
+            return;
+          }
+
+          if (data.user) {
+            await updateAccountButton();
+            accountModal.classList.remove('open');
+            loginForm.reset();
+            setMessage('Logged in successfully!');
+          }
+        });
+
+        signupForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          if (!supabase) {
+            setMessage('Supabase is not available. Check the script connection.', true);
+            return;
+          }
+
+          const displayName = document.getElementById('signupUsername').value.trim();
+          const email = document.getElementById('signupEmail').value.trim();
+          const password = document.getElementById('signupPassword').value;
+
+          if (!email || !password) {
+            setMessage('Please enter an email and password.', true);
+            return;
+          }
+
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                username: displayName || email.split('@')[0]
+              }
+            }
+          });
+
+          if (error) {
+            setMessage(error.message, true);
+            return;
+          }
+
+          if (data.user) {
+            await updateAccountButton();
+            accountModal.classList.remove('open');
+            signupForm.reset();
+            setMessage('Account created! Check your email for confirmation.');
+          }
+        });
+
+        accountBtn.addEventListener('dblclick', async () => {
+          if (!supabase) {
+            setMessage('Supabase is not available. Check the script connection.', true);
+            return;
+          }
+
+          const { error } = await supabase.auth.signOut();
+          if (!error) {
+            await updateAccountButton();
+            setMessage('Signed out.');
+          }
+        });
+      });
     </script>
   </body>
 </html>
