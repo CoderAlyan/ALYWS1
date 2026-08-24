@@ -244,6 +244,61 @@
         color: rgba(244, 247, 255, 0.85);
       }
 
+      /* War */
+      .war-table {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+
+      .war-side {
+        text-align: center;
+      }
+
+      .war-label {
+        margin: 0 0 10px;
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #7dd3fc;
+      }
+
+      .war-card {
+        width: 90px;
+        height: 130px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        font-weight: 900;
+      }
+
+      .war-card.red {
+        color: #ff9aa2;
+      }
+
+      .war-card.black {
+        color: #f4f7ff;
+      }
+
+      .war-count {
+        margin-top: 10px;
+        font-size: 0.85rem;
+        color: rgba(244, 247, 255, 0.65);
+      }
+
+      .war-vs {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: rgba(244, 247, 255, 0.4);
+      }
+
       .azha-brand {
         position: fixed;
         bottom: 20px;
@@ -314,6 +369,10 @@
             <h3>Rock Paper Scissors</h3>
             <p>Beat the computer, best of luck.</p>
           </button>
+          <button type="button" class="game-card" data-game="war">
+            <h3>War</h3>
+            <p>Highest card takes the pot. You vs. the AI.</p>
+          </button>
         </div>
         <p class="no-results" id="noResults">No games match your search.</p>
 
@@ -344,6 +403,27 @@
           </div>
           <p class="rps-result" id="rpsResult">Make your move.</p>
         </div>
+
+        <!-- War -->
+        <div class="game-panel" id="panel-war">
+          <h3>War</h3>
+          <p class="game-status" id="warStatus">Draw a card to begin.</p>
+          <div class="war-table">
+            <div class="war-side">
+              <p class="war-label">You</p>
+              <div class="war-card" id="warPlayerCard">🂠</div>
+              <p class="war-count" id="warPlayerCount">26 cards</p>
+            </div>
+            <span class="war-vs">VS</span>
+            <div class="war-side">
+              <p class="war-label">AI</p>
+              <div class="war-card" id="warAiCard">🂠</div>
+              <p class="war-count" id="warAiCount">26 cards</p>
+            </div>
+          </div>
+          <button type="button" class="action-btn" id="warDraw">Draw Card</button>
+          <button type="button" class="action-btn" id="warReset">New Game</button>
+        </div>
       </section>
     </main>
 
@@ -362,6 +442,7 @@
         ttt: document.getElementById('panel-ttt'),
         memory: document.getElementById('panel-memory'),
         rps: document.getElementById('panel-rps'),
+        war: document.getElementById('panel-war'),
       };
       const searchInput = document.getElementById('gameSearch');
       const noResults = document.getElementById('noResults');
@@ -545,6 +626,167 @@
           rpsScore.textContent = `You: ${playerScore} | Computer: ${computerScore}`;
         });
       });
+
+      // ---- War ----
+      const warStatus = document.getElementById('warStatus');
+      const warPlayerCard = document.getElementById('warPlayerCard');
+      const warAiCard = document.getElementById('warAiCard');
+      const warPlayerCount = document.getElementById('warPlayerCount');
+      const warAiCount = document.getElementById('warAiCount');
+      const warDraw = document.getElementById('warDraw');
+      const warReset = document.getElementById('warReset');
+
+      const SUITS = [
+        { symbol: '♠', color: 'black' },
+        { symbol: '♥', color: 'red' },
+        { symbol: '♦', color: 'red' },
+        { symbol: '♣', color: 'black' },
+      ];
+      const RANKS = [
+        { label: '2', value: 2 }, { label: '3', value: 3 }, { label: '4', value: 4 },
+        { label: '5', value: 5 }, { label: '6', value: 6 }, { label: '7', value: 7 },
+        { label: '8', value: 8 }, { label: '9', value: 9 }, { label: '10', value: 10 },
+        { label: 'J', value: 11 }, { label: 'Q', value: 12 }, { label: 'K', value: 13 },
+        { label: 'A', value: 14 },
+      ];
+
+      let warPlayerDeck = [];
+      let warAiDeck = [];
+      let warOver = false;
+
+      function buildWarDeck() {
+        const deck = [];
+        SUITS.forEach((suit) => {
+          RANKS.forEach((rank) => {
+            deck.push({ label: rank.label, value: rank.value, suit: suit.symbol, color: suit.color });
+          });
+        });
+        return shuffle(deck);
+      }
+
+      function startWar() {
+        const deck = buildWarDeck();
+        warPlayerDeck = deck.slice(0, 26);
+        warAiDeck = deck.slice(26);
+        warOver = false;
+        warStatus.textContent = 'Draw a card to begin.';
+        warPlayerCard.textContent = '🂠';
+        warAiCard.textContent = '🂠';
+        warPlayerCard.className = 'war-card';
+        warAiCard.className = 'war-card';
+        updateWarCounts();
+      }
+
+      function updateWarCounts() {
+        warPlayerCount.textContent = `${warPlayerDeck.length} cards`;
+        warAiCount.textContent = `${warAiDeck.length} cards`;
+      }
+
+      function showWarCard(el, card) {
+        el.textContent = `${card.label}${card.suit}`;
+        el.className = `war-card ${card.color}`;
+      }
+
+      function checkWarOver() {
+        if (warPlayerDeck.length === 0) {
+          warStatus.textContent = 'The AI wins the whole deck. Game over.';
+          warOver = true;
+          return true;
+        }
+        if (warAiDeck.length === 0) {
+          warStatus.textContent = 'You win the whole deck! Game over.';
+          warOver = true;
+          return true;
+        }
+        return false;
+      }
+
+      function playWarRound() {
+        if (warOver || checkWarOver()) return;
+
+        const pot = [];
+        const playerCard = warPlayerDeck.shift();
+        const aiCard = warAiDeck.shift();
+        pot.push(playerCard, aiCard);
+        showWarCard(warPlayerCard, playerCard);
+        showWarCard(warAiCard, aiCard);
+
+        if (playerCard.value > aiCard.value) {
+          warPlayerDeck.push(...shuffle(pot));
+          warStatus.textContent = `Your ${playerCard.label}${playerCard.suit} beats ${aiCard.label}${aiCard.suit}. You take the pot.`;
+          updateWarCounts();
+          checkWarOver();
+        } else if (playerCard.value < aiCard.value) {
+          warAiDeck.push(...shuffle(pot));
+          warStatus.textContent = `AI's ${aiCard.label}${aiCard.suit} beats your ${playerCard.label}${playerCard.suit}. AI takes the pot.`;
+          updateWarCounts();
+          checkWarOver();
+        } else {
+          warStatus.textContent = `Tie at ${playerCard.label}! Going to WAR...`;
+          updateWarCounts();
+          setTimeout(() => resolveWar(pot), 900);
+        }
+      }
+
+      function resolveWar(pot) {
+        if (warPlayerDeck.length === 0) {
+          warAiDeck.push(...pot);
+          updateWarCounts();
+          checkWarOver();
+          return;
+        }
+        if (warAiDeck.length === 0) {
+          warPlayerDeck.push(...pot);
+          updateWarCounts();
+          checkWarOver();
+          return;
+        }
+
+        pot.push(warPlayerDeck.shift(), warAiDeck.shift());
+
+        if (warPlayerDeck.length === 0) {
+          warAiDeck.push(...pot);
+          updateWarCounts();
+          checkWarOver();
+          return;
+        }
+        if (warAiDeck.length === 0) {
+          warPlayerDeck.push(...pot);
+          updateWarCounts();
+          checkWarOver();
+          return;
+        }
+
+        const playerCard = warPlayerDeck.shift();
+        const aiCard = warAiDeck.shift();
+        pot.push(playerCard, aiCard);
+        showWarCard(warPlayerCard, playerCard);
+        showWarCard(warAiCard, aiCard);
+        updateWarCounts();
+
+        if (playerCard.value > aiCard.value) {
+          warPlayerDeck.push(...shuffle(pot));
+          warStatus.textContent = `Your ${playerCard.label}${playerCard.suit} wins the war! You take ${pot.length} cards.`;
+          updateWarCounts();
+          checkWarOver();
+        } else if (playerCard.value < aiCard.value) {
+          warAiDeck.push(...shuffle(pot));
+          warStatus.textContent = `AI's ${aiCard.label}${aiCard.suit} wins the war! AI takes ${pot.length} cards.`;
+          updateWarCounts();
+          checkWarOver();
+        } else {
+          warStatus.textContent = `Another tie at ${playerCard.label}! WAR continues...`;
+          setTimeout(() => resolveWar(pot), 900);
+        }
+      }
+
+      warDraw.addEventListener('click', () => {
+        if (warOver) return;
+        playWarRound();
+      });
+
+      warReset.addEventListener('click', startWar);
+      startWar();
     </script>
   </body>
 </html>
